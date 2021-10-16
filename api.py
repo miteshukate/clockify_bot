@@ -29,7 +29,7 @@ def getWorkspace():
 
 def createTimeEntry():
     workspaceId = "5bbc6e41b079870146f7aaec"
-    api_key = "NzFmMjA4M2QtNjI5OC00NGNiLTkxYTctZjMyZDZhNDU3ZTFk"
+    api_key = ""
     url = f"https://api.clockify.me/api/v1/workspaces/{workspaceId}/time-entries"
     headers = {"Content-Type": "application/json",
                "X-Api-Key": api_key}
