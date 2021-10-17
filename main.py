@@ -13,5 +13,6 @@ def print_hi(name):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     # print_hi('PyCharm')
-    api.createTimeEntry()
+    # api.create_time_entries()
+    api.create_time_entries()
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
