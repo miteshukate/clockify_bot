@@ -1,16 +1,15 @@
 import requests
+import sys
 import file_reader
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 import pytz
 from dotenv import dotenv_values
-
 
 API_ENDPOINT = "http://pastebin.com/api/api_post.php"
 
 # your API key here
 config = dotenv_values(".env")
 API_KEY = config["CLOCKIFY_SECRETE"]
-
 
 
 def getTimeEntryRequestPayload(start_end_date, description):
@@ -35,25 +34,27 @@ def get_workspace():
     headers = {"Content-Type": "application/json",
                "X-Api-Key": API_KEY}
 
-    response = requests.get(url,headers=headers)
+    response = requests.get(url, headers=headers)
 
     return response.json()
 
-def get_project_id(workspaceId):
+
+def get_project_id_data(workspaceId):
     # implementation later
     url = f"https://api.clockify.me/api/v1/workspaces/{workspaceId}/projects"
     headers = {"Content-Type": "application/json",
                "X-Api-Key": API_KEY}
 
-    response = requests.get(url,headers=headers)
+    response = requests.get(url, headers=headers)
 
     return response.json()
 
 
 def create_time_entries():
+    preconditions()
     entries = file_reader.get_time_entries()
     print("********************** Started filling time sheet ******************")
-    beg_date = datetime.now()
+    beg_date = datetime.strptime(sys.argv[1], "%Y-%m-%d")
     for entry in entries:
         updated_date = get_date_time(beg_date)
         beg_date = updated_date[0]
@@ -63,10 +64,27 @@ def create_time_entries():
     print("********************** Completed filling time sheet ****************")
 
 
+def preconditions():
+    if len(sys.argv) != 2:
+        print("Pass date in argument eg: python main 2021-10-01")
+    workspaces = get_workspace()
+    if len(workspaces) != 1:
+        print("More than one workspaces")
+        exit(0)
+    workspace_id = workspaces[0]["id"]
+    if config.get("PROJECT_ID") is None or config.get("PROJECT_ID") == "":
+        print("No Project Id is assigned.")
+        project_id_data = get_project_id_data(workspace_id)
+        for project in project_id_data:
+            print(f"project name: {project.get('name')} id: {project.get('id')}")
+
+        print('update "PROJECT_ID" with your project id mentioned above.')
+        exit(0)
+
 
 def createTimeEntry(data):
     workspaces = get_workspace()
-    if len (workspaces) != 1:
+    if len(workspaces) != 1:
         print("More than one workspaces")
         return
 
@@ -75,7 +93,7 @@ def createTimeEntry(data):
     url = f"https://api.clockify.me/api/v1/workspaces/{workspaceId}/time-entries"
     headers = {"Content-Type": "application/json",
                "X-Api-Key": API_KEY}
-    data["projectId"] = "5d831336affb256595167f1b"
+    data["projectId"] = config.get("PROJECT_ID")
     response = requests.post(url, headers=headers, json=data)
     print("response", response)
 
