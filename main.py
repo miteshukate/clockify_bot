@@ -1,4 +1,7 @@
 import api
+import sys
+
+
 # This is a sample Python script.
 
 # Press ⌃R to execute it or replace it with your code.
@@ -14,5 +17,6 @@ def print_hi(name):
 if __name__ == '__main__':
     # print_hi('PyCharm')
     # api.create_time_entries()
+    print("Sys args:", sys.argv)
     api.create_time_entries()
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
